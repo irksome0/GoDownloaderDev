@@ -112,7 +112,6 @@ func download(vID string, path string) {
 	}
 	_, err = io.Copy(file, stream)
 	if err != nil {
-		fmt.Println("HERE")
 		panic(err)
 	}
 }
