@@ -14,11 +14,12 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
 func main() {
-	
+
 	// Initializing a new GUI application
 	application := app.New()
 
@@ -32,8 +33,11 @@ func main() {
 func mainWindow(windowWidth float32, windowHeight float32, path string, application fyne.App) {
 
 	// Setting up the window
-	myWindow := application.NewWindow("Downloader")
-	myWindow.Resize(fyne.NewSize(windowWidth, windowHeight))
+	window := application.NewWindow("Downloader")
+	window.Resize(fyne.NewSize(windowWidth, windowHeight))
+
+	// Adding the application icon
+	window.SetIcon(theme.MoveDownIcon())
 
 	// Initializing welcome text
 	text := canvas.NewText("Welcome to downloader", color.White)
@@ -56,21 +60,24 @@ func mainWindow(windowWidth float32, windowHeight float32, path string, applicat
 	// Button to open a window to change the path of downloading audio
 	locationButton := widget.NewButton("Change path", func() {
 		locationWindow(windowWidth, windowHeight, path, application)
-		myWindow.Close()
+		window.Close()
 	})
 	locationButton.Resize(fyne.NewSize(windowWidth/4, windowHeight/5))
 	locationButton.Move(fyne.NewPos(windowWidth*0.355, windowHeight/1.5))
 
 	// Setting up all the content in the window
-	myWindow.SetContent(container.NewWithoutLayout(text, input, button, locationButton))
-	myWindow.Show()
+	window.SetContent(container.NewWithoutLayout(text, input, button, locationButton))
+	window.Show()
 }
 
 func locationWindow(windowWidth float32, windowHeight float32, path string, application fyne.App) {
 
 	// Setting up the window
-	myWindow := application.NewWindow("Create a folder")
-	myWindow.Resize(fyne.NewSize(windowWidth, windowHeight))
+	window := application.NewWindow("Create a folder")
+	window.Resize(fyne.NewSize(windowWidth, windowHeight))
+
+	// Adding the application icon
+	window.SetIcon(theme.MoveDownIcon())
 
 	// Initializing the description text
 	text := canvas.NewText("Enter location for the folder", color.White)
@@ -84,6 +91,9 @@ func locationWindow(windowWidth float32, windowHeight float32, path string, appl
 
 	// Button to save the path
 	button := widget.NewButton("Use path", func() {
+		if input.Text == "" {
+			fmt.Println("==========\nThe path field is empty\nTry again\n==========")
+		}
 		path = input.Text
 	})
 	button.Resize(fyne.NewSize(windowWidth/4, windowHeight/5))
@@ -92,19 +102,19 @@ func locationWindow(windowWidth float32, windowHeight float32, path string, appl
 	// Button to return to the main window
 	returnButton := widget.NewButton("Return", func() {
 		mainWindow(windowWidth, windowHeight, path, application)
-		myWindow.Close()
+		window.Close()
 	})
 	returnButton.Resize(fyne.NewSize(windowWidth/4, windowHeight/4))
 	returnButton.Move(fyne.NewPos(windowWidth*0.355, windowHeight/1.5))
 
 	// Setting up all the content
-	myWindow.SetContent(container.NewWithoutLayout(text, input, button, returnButton))
-	myWindow.Show()
+	window.SetContent(container.NewWithoutLayout(text, input, button, returnButton))
+	window.Show()
 }
 
 func download(vID string, path string) {
 	var videoID string
-	
+
 	// Validating a video URL and saving its ID
 	if len(vID) < 43 {
 		return
@@ -119,10 +129,10 @@ func download(vID string, path string) {
 	client := youtube.Client{}
 	video, err := client.GetVideo(videoID)
 	if err != nil {
-		fmt.Println("Error with downloading the video")
+		fmt.Println("=========\nError with downloading the video\nTry again\n==========")
 		return
 	}
-	
+
 	// Displaying video information if it is valid in console
 	// not necessary function
 	displayInfo(*video)
